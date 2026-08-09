@@ -1,7 +1,7 @@
-import { createServer } from "node:http";
-import app from "./app.js";
-import { config } from "./configs/config.js";
-import { logger } from "./utils/logger.js";
+import { createServer } from 'node:http';
+import app from './app.js';
+import { config } from './configs/config.js';
+import { logger } from './utils/logger.js';
 
 const port = config.port;
 

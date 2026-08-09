@@ -11,14 +11,14 @@ export const RequestContextStore = {
   run(context: RequestContext, callback: () => void) {
     asyncLocalStorage.run(context, callback);
   },
-getRequestId(): string | null {
+  getRequestId(): string | null {
     return asyncLocalStorage.getStore()?.requestId ?? null;
   },
   getUserId(): string | null {
     return asyncLocalStorage.getStore()?.userId ?? null;
   },
-setRequestId(requestId: string) {
-    const store = asyncLocalStorage.getStore(); 
+  setRequestId(requestId: string) {
+    const store = asyncLocalStorage.getStore();
     if (store) {
       store.requestId = requestId;
     }

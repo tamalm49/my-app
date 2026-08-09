@@ -11,55 +11,55 @@ const nodeEnv = process.env.NODE_ENV ?? 'development';
 fs.mkdirSync(logDirectory, { recursive: true });
 
 function buildLogFileName(date = new Date()): string {
-    const dateStamp = date.toISOString().slice(0, 10);
-    return `${appName}-${dateStamp}.log`;
+  const dateStamp = date.toISOString().slice(0, 10);
+  return `${appName}-${dateStamp}.log`;
 }
 
 class DailyRotateFileSink {
-    write(chunk: string): void {
-        const logFilePath = path.join(logDirectory, buildLogFileName());
-        fs.mkdirSync(logDirectory, { recursive: true });
-        fs.appendFileSync(logFilePath, chunk, 'utf8');
-    }
+  write(chunk: string): void {
+    const logFilePath = path.join(logDirectory, buildLogFileName());
+    fs.mkdirSync(logDirectory, { recursive: true });
+    fs.appendFileSync(logFilePath, chunk, 'utf8');
+  }
 }
 
 const dailyFileStream = new DailyRotateFileSink();
 const consoleStream = pinoPretty({
-    colorize: true,
-    translateTime: 'SYS:standard',
-    ignore: 'pid,hostname',
+  colorize: true,
+  translateTime: 'SYS:standard',
+  ignore: 'pid,hostname'
 });
 
 const streams = [
-    {
-        level: 'info',
-        stream: dailyFileStream,
-    },
+  {
+    level: 'info',
+    stream: dailyFileStream
+  }
 ];
 
 if (nodeEnv !== 'production') {
-    streams.push({
-        level: 'debug',
-        stream: consoleStream,
-    });
+  streams.push({
+    level: 'debug',
+    stream: consoleStream
+  });
 }
 
 export const logger = pino(
-    {
-        name: appName,
-        level: logLevel,
-        timestamp: pino.stdTimeFunctions.isoTime,
-        formatters: { level: (label) => ({ level: label }) },
-    },
-    pino.multistream(streams),
+  {
+    name: appName,
+    level: logLevel,
+    timestamp: pino.stdTimeFunctions.isoTime,
+    formatters: { level: (label) => ({ level: label }) }
+  },
+  pino.multistream(streams)
 );
 
 export function rotateLogFile(): void {
-    const currentDate = new Date().toISOString().slice(0, 10);
-    const currentLogFile = path.join(logDirectory, buildLogFileName());
-    const expectedLogFile = path.join(logDirectory, `${appName}-${currentDate}.log`);
+  const currentDate = new Date().toISOString().slice(0, 10);
+  const currentLogFile = path.join(logDirectory, buildLogFileName());
+  const expectedLogFile = path.join(logDirectory, `${appName}-${currentDate}.log`);
 
-    if (currentLogFile !== expectedLogFile) {
-        logger.flush();
-    }
+  if (currentLogFile !== expectedLogFile) {
+    logger.flush();
+  }
 }
