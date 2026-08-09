@@ -9,6 +9,7 @@ import { healthCheck } from './middlewares/health.js';
 import { corsOptions } from './configs/config.js';
 import { requestContext } from './middlewares/request-context.js';
 import userRouter from './routers/user-router.js';
+import { limiter } from './utils/rate-limiter.js';
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -17,6 +18,7 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(limiter); // Apply rate limiting to all /api routes
 app.use(requestContext);
 app.use('/health', healthCheck);
 app.use('/api', userRouter);
