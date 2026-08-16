@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 24
+    commands:
+      - npm ci
+
+  build:
+    commands:
+      - npm run build
+
+artifacts:
+  files:
+    - package.json
+    - package-lock.json
+    - dist/**/*
+    - src/**/*
+    - public/**/*
+    - views/**/*
+    - .env.example
+    - .npmrc
+    - app.js
+    - server.js
+    - README.md
+  discard-paths: no
+
+cache:
+  paths:
+    - /root/.npm/**
