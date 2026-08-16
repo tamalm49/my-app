@@ -1,6 +1,7 @@
 export const config = {
   port: process.env.PORT,
-  nodeEnv: process.env.NODE_ENV
+  nodeEnv: process.env.NODE_ENV,
+  openAiApiKey: process.env.OPENAI_API_KEY
 };
 
 export const corsOptions = {

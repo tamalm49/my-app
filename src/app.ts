@@ -10,6 +10,7 @@ import { corsOptions } from './configs/config.js';
 import { requestContext } from './middlewares/request-context.js';
 import userRouter from './routers/user-router.js';
 import { limiter } from './utils/rate-limiter.js';
+import aiRouter from './routers/ai-routers.js';
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -21,7 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(limiter); // Apply rate limiting to all /api routes
 app.use(requestContext);
 app.use('/health', healthCheck);
-app.use('/api', userRouter);
+app.use('/api/auth', userRouter);
+app.use('/api/ai', aiRouter);
 app.use('/public', express.static(path.resolve(process.cwd(), 'public')));
 app.use(notFoundHandler);
 app.use(errorHandler);

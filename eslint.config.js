@@ -42,7 +42,24 @@ export default tseslint.config(
       }
     },
     rules: {
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }]
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      eqeqeq: ['error', 'always'],
+      'no-var': 'error',
+      'prefer-const': ['error', { destructuring: 'all' }],
+      'no-eval': 'error',
+      'no-implied-eval': 'error',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'consistent-return': 'error',
+      curly: ['error', 'all'],
+      '@typescript-eslint/no-floating-promises': 'error',
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'no-duplicate-imports': 'error',
+      'no-param-reassign': [
+        'error',
+        { props: true, ignorePropertyModificationsFor: ['req', 'res', 'ctx'] }
+      ]
     }
   },
   eslintConfigPrettier
