@@ -11,3 +11,12 @@ export const corsOptions = {
   preflightContinue: false,
   optionsSuccessStatus: 204
 };
+
+export const mongoConfig = {
+  uri: process.env.MONGO_URI || 'mongodb://localhost:27017/your-database-name',
+  schema: process.env.MONGO_SCHEMA || 'my-app-schema'
+};
+export const redisConfig = {
+  host: process.env.VALKEY_URL || 'localhost',
+  port: 6379
+};

@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import { getOllamaReply, streamOllamaReply } from '../services/generate-ai-response.js';
+import { streamOllamaReply, texttospeech } from '../services/generate-ai-response.js';
 import { asyncHandler } from '../cores/request-handler.js';
 export async function streamChat(req: Request, res: Response) {
     const { prompt } = req.body;
@@ -28,12 +28,14 @@ export async function streamChat(req: Request, res: Response) {
         res.end();
     }
 }
-export const getAiResponse = asyncHandler(async (req, res) => {
-    const { prompt } = req.body;
+export const getAiResponse = asyncHandler(async (_req, _res) => {
+    // const { prompt } = req.body;
 
-    if (!prompt || typeof prompt !== "string") {
-        res.status(400).json({ error: "Prompt is required." });
-    }
-    const chatReply = await getOllamaReply(prompt);
-    res.status(200).json({ message: chatReply });
+    // if (!prompt || typeof prompt !== "string") {
+    //     res.status(400).json({ error: "Prompt is required." });
+    // }
+    // const chatReply = await getOllamaReply(prompt);
+    // res.status(200).json({ message: chatReply });
+    await texttospeech();
+
 });
