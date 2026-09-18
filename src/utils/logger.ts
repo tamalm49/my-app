@@ -1,12 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import pino from 'pino';
-import pinoPretty from 'pino-pretty';
 
 const logDirectory = path.resolve(process.env.LOG_DIR ?? './var/project-name/log');
 const appName = 'my-app';
 const logLevel = process.env.LOG_LEVEL ?? 'info';
-const nodeEnv = process.env.NODE_ENV ?? 'development';
 
 fs.mkdirSync(logDirectory, { recursive: true });
 
@@ -24,25 +22,17 @@ class DailyRotateFileSink {
 }
 
 const dailyFileStream = new DailyRotateFileSink();
-const consoleStream = pinoPretty({
-  colorize: true,
-  translateTime: 'SYS:standard',
-  ignore: 'pid,hostname'
-});
 
 const streams = [
   {
     level: 'info',
     stream: dailyFileStream
+  },
+  {
+    level: 'info',
+    stream: process.stdout
   }
 ];
-
-if (nodeEnv !== 'production') {
-  streams.push({
-    level: 'debug',
-    stream: consoleStream
-  });
-}
 
 export const logger = pino(
   {

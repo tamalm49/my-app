@@ -1,7 +1,7 @@
 export const config = {
-  port: process.env.PORT,
-  nodeEnv: process.env.NODE_ENV,
-  openAiApiKey: process.env.OPENAI_API_KEY
+  port: Number(process.env.PORT) || 3000,
+  nodeEnv: String(process.env.NODE_ENV).trim(),
+  openAiApiKey: String(process.env.OPENAI_API_KEY).trim()
 };
 
 export const corsOptions = {
@@ -13,10 +13,10 @@ export const corsOptions = {
 };
 
 export const mongoConfig = {
-  uri: process.env.MONGO_URI || 'mongodb://localhost:27017/your-database-name',
-  schema: process.env.MONGO_SCHEMA || 'my-app-schema'
+  uri: String(process.env.MONGO_URI).trim() || 'mongodb://localhost:27017/your-database-name',
+  schema: String(process.env.MONGO_SCHEMA).trim() || 'my-app-schema'
 };
 export const redisConfig = {
-  host: process.env.VALKEY_URL || 'localhost',
+  host: String(process.env.VALKEY_URL).trim() || 'localhost',
   port: 6379
 };

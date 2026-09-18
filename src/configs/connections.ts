@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { mongoConfig } from './config.js';
+import { mongoConfig, redisConfig } from './config.js';
 import { logger } from '../utils/logger.js';
 import Redis from "ioredis";
 const mongoClient = async () => {
@@ -7,7 +7,7 @@ const mongoClient = async () => {
     return connection;
 }
 export const cacheClient = new Redis.Redis({
-    host: 'localhost',
+    host: redisConfig.host,
     port: 6379,
     retryStrategy: (times) => {
         const delay = Math.min(times * 50, 2000);
@@ -29,6 +29,7 @@ const disconnectCache = async () => {
         logger.error(`Error disconnecting from Redis: ${error}`);
     }
 }
+
 const disconnectMongo = async () => {
     try {
         await mongoose.disconnect();
@@ -47,4 +48,5 @@ export const connect = async () => {
 export const disconnect = async () => {
     await disconnectCache();
     await disconnectMongo();
+    logger.info('Disconnected from services');
 }
