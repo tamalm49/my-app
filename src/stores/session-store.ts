@@ -25,7 +25,7 @@ const sessions = cacheClient; // new Map<string, SessionData>();
 export async function createSession(user: SessionUser, homeAccountId: string): Promise<string> {
     const sessionId = crypto.randomUUID();
     const now = Date.now();
-    await sessions.set(sessionId, JSON.stringify({
+    await sessions.set(`session:${sessionId}`, JSON.stringify({
         user,
         homeAccountId,
         createdAt: now,
@@ -35,28 +35,28 @@ export async function createSession(user: SessionUser, homeAccountId: string): P
 }
 
 export async function getSession(sessionId: string): Promise<SessionData | null> {
-    const entry = await sessions.get(sessionId);
+    const entry = await sessions.get(`session:${sessionId}`);
     if (!entry) return null;
 
     const sessionData = JSON.parse(entry);
     if (Date.now() > sessionData.expiresAt) {
-        await sessions.del(sessionId);
+        await sessions.del(`session:${sessionId}`);
         return null;
     }
     return sessionData;
 }
 
 export async function touchSession(sessionId: string): Promise<void> {
-    const entry = await sessions.get(sessionId);
+    const entry = await sessions.get(`session:${sessionId}`);
     if (entry) {
         const sessionData = JSON.parse(entry);
         sessionData.expiresAt = Date.now() + config.sessionTtlMinutes * 60 * 1000;
-        await sessions.set(sessionId, JSON.stringify(sessionData), 'PX', config.sessionTtlMinutes * 60 * 1000);
+        await sessions.set(`session:${sessionId}`, JSON.stringify(sessionData), 'PX', config.sessionTtlMinutes * 60 * 1000);
     }
 }
 
 export async function destroySession(sessionId: string): Promise<void> {
-    await sessions.del(sessionId);
+    await sessions.del(`session:${sessionId}`);
 }
 
 // // Periodic sweep of expired sessions

@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { getSession, touchSession, type SessionUser } from '../stores/session-store.js';
+import { RequestContextStore } from '../cores/request-context.js';
 
 const SESSION_COOKIE_NAME = 'sid';
 
@@ -13,9 +14,8 @@ function wantsHtml(req: Request): boolean {
 }
 
 // eslint-disable-next-line consistent-return
-export async function requireSession(req: SessionRequest, res: Response, next: NextFunction) {
-    console.log('requireSession called', req.cookies, req.headers.accept);
-    const sessionId = req.cookies?.sid
+export async function authenticate(req: SessionRequest, res: Response, next: NextFunction) {
+    const sessionId = req.cookies[SESSION_COOKIE_NAME];
 
     if (!sessionId) {
         if (wantsHtml(req)) return res.redirect('/api/auth/login');
@@ -32,6 +32,7 @@ export async function requireSession(req: SessionRequest, res: Response, next: N
     await touchSession(sessionId); // sliding expiration
     req.user = session.user;
     req.sessionId = sessionId;
+    RequestContextStore.setUserId(session.user.oid);
     next();
 }
 

@@ -36,10 +36,10 @@ const TRANSACTION_TTL_MS: number = 5 * 60 * 1000; // 5 minutes to complete the l
 
 export async function savePkceTransactionToRedis(state: string, codeVerifier: string): Promise<void> {
     const transaction: PkceTransaction = { codeVerifier, createdAt: Date.now(), expireAt: Date.now() + TRANSACTION_TTL_MS };
-    await cacheClient.set(state, JSON.stringify(transaction), 'PX', TRANSACTION_TTL_MS);
+    await cacheClient.set(`pkce:${state}`, JSON.stringify(transaction), 'PX', TRANSACTION_TTL_MS);
 }
 export async function consumePkceTransactionFromRedis(state: string): Promise<string | null> {
-    const entryStr = await cacheClient.get(state);
+    const entryStr = await cacheClient.get(`pkce:${state}`);
     if (!entryStr) return null;
     const entry: PkceTransaction = JSON.parse(entryStr);
     if (Date.now() > entry.expireAt) {

@@ -3,6 +3,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import path from 'node:path';
 import './global.js';
+import cookieParser from 'cookie-parser';
+import morgan from 'morgan';
 import { errorHandler } from './middlewares/error-handler.js';
 import { notFoundHandler } from './middlewares/notfound-handler.js';
 import { healthCheck } from './middlewares/health.js';
@@ -11,7 +13,7 @@ import { requestContext } from './middlewares/request-context.js';
 import { limiter } from './utils/rate-limiter.js';
 import aiRouter from './routers/ai-routers.js';
 import authRouter from './routers/auth-routers.js';
-import { requireSession } from './utils/requires-session.js';
+import { authenticate } from './middlewares/authenticator.js';
 const app = express();
 
 app.set('view engine', 'ejs');
@@ -20,6 +22,8 @@ app.use(helmet());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(morgan('dev'));
 app.use(limiter); // Apply rate limiting to all /api routes
 app.use(requestContext);
 app.get('/', (_req, res) => {
@@ -29,7 +33,7 @@ app.get('/', (_req, res) => {
     <p><a href="/dashboard">Go to dashboard</a> (will redirect to sign-in if not authenticated)</p>
   `);
 });
-app.use('/dashboard', requireSession, (_req, res) => {
+app.use('/dashboard', authenticate, (_req, res) => {
   res.send(`
     <h1>Dashboard</h1>
     <p>Welcome to the dashboard! You are authenticated.</p>
@@ -37,7 +41,7 @@ app.use('/dashboard', requireSession, (_req, res) => {
   `);
 });
 
-app.use('/health', healthCheck);
+app.use('/health', authenticate, healthCheck);
 app.use('/api/auth', authRouter);
 app.use('/api/ai', aiRouter);
 app.use('/public', express.static(path.resolve(process.cwd(), 'public')));
@@ -45,3 +49,4 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 export default app;
+

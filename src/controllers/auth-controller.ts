@@ -4,7 +4,7 @@ import { consumePkceTransactionFromRedis, savePkceTransactionToRedis, } from "..
 import { createSession, destroySession, type SessionUser } from "../stores/session-store.js";
 import { loginScopes, msalClient } from "../utils/msal-client .js";
 import { generatePkce, generateState } from "../utils/pkce.js";
-import { SESSION_COOKIE_NAME } from "../utils/requires-session.js";
+import { SESSION_COOKIE_NAME } from "../middlewares/authenticator.js";
 const cookieOptions = {
     httpOnly: true,
     secure: config.cookieSecure, // set true in prod (requires HTTPS)
@@ -74,7 +74,7 @@ export const callbackHandler = asyncHandler(async (req, res) => {
     //   `);
     // }
 
-    const sessionId = createSession(user, result.account.homeAccountId);
+    const sessionId = await createSession(user, result.account.homeAccountId);
 
     res.cookie(SESSION_COOKIE_NAME, sessionId, cookieOptions);
     res.redirect('/dashboard');
@@ -82,7 +82,7 @@ export const callbackHandler = asyncHandler(async (req, res) => {
 export const logout = asyncHandler(async (req, res) => {
     const sessionId = req.cookies[SESSION_COOKIE_NAME];
     if (sessionId) {
-        destroySession(sessionId);
+        await destroySession(sessionId);
     }
     res.clearCookie(SESSION_COOKIE_NAME, cookieOptions);
     const logoutUrl = `${azureEndpoints.logoutUrl}?post_logout_redirect_uri=${encodeURIComponent(config.postLogoutRedirectUri)}`;
